@@ -1,0 +1,89 @@
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header {
+    background: #000;
+    color: #fff;
+    flex: 0 0 3rem;
+    padding: .2rem;
+    display: flex;
+    height: 3rem;
+}
+.header h1 { flex: 1 0 auto; }
+.header .new { flex: 0 0 auto; }
+
+.scratchpads {
+    flex: 1 1 0;
+    overflow-x: auto;
+    padding: 0 .25rem;
+    display: flex;
+}
+
+.scratchpad {
+    max-height: calc(100vh - 3rem);
+    flex: 1 1 0;
+    margin: .25rem;
+    max-width: 800px;
+    min-width: 200px;
+    overflow: hidden auto;
+    box-shadow: inset 0px 0px 2px black;
+}
+
+.scratchpad:first-child { margin-left: auto; }
+.scratchpad:last-child { margin-right: auto; }
+
+.item.active {
+    box-shadow: inset 0px 0px 2px blue;
+}
+
+.item:not(.active) .hide-inactive {
+    display: none;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.active .ellipsis {
+    white-space: normal;
+    overflow: auto;
+    text-overflow: unset;
+}
+
+.item input, .item button {
+    width: 100%;
+}
+
+.item {
+    border-radius: 2px;
+    margin: .5rem;
+    background-color: #eee;
+}
+
+.info {
+    background-color: #222;
+    color: #eee;
+}
+
+.info > div {
+    font-size: .8rem;
+    display: inline-block;
+    padding: 0 .25rem;
+    margin: 0 .25rem;
+}
+
+.info button {
+    line-height: .8rem;
+    border: 0;
+}
+
+.content {
+    padding: 1rem;
+}
+
+.info > div:first-child { margin-left: 0; }

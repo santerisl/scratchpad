@@ -1,1 +1,45 @@
-<h1>{{title}}</h1>
+<div id="app">
+    <div class="header">
+        <h1>{{title}}</h1>
+        <button class="new" (click)="addScratchpad()">New</button>
+    </div>
+
+    <div class="scratchpads">
+        <section class="scratchpad"
+            *ngFor="let scratchpad of scratchpads">
+            
+            <div class="item"
+                (click)="scratchpad.active = !scratchpad.active"
+                [ngClass]="{'active': scratchpad.active}" >
+                <div class="info">
+                    <div>Info</div>
+                    <div>
+                        <button (click)="removeScratchpad(scratchpad)">Remove</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="content ellipsis">{{scratchpad.name}}</h3>
+                </div>
+                
+            </div>
+            <div class="item">
+                <input type="text" />
+                <button (click)="addItem(scratchpad)">Save</button>
+            </div>
+
+            <div class="item" 
+                *ngFor="let item of scratchpad.items" 
+                (click)="item.active = !item.active"
+                [ngClass]="{'active': item.active}">
+                
+                <div class="info">
+                    <div>{{item.time | date:'yyyy-MM-dd'}}</div>
+                    <div>{{item.time | date:'HH:mm'}}</div>
+                    <div><button (click)="removeItem(scratchpad, item)">remove</button></div>
+                </div>
+                <div class="content ellipsis">{{item.content}}</div>
+            </div>
+        </section>
+    
+    </div>
+</div>
