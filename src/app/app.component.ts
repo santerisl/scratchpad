@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import Scratchpad from './Scratchpad';
+import { LocalStorageService } from './local-storage.service';
 
 
 @Component({
@@ -11,14 +12,24 @@ import Scratchpad from './Scratchpad';
 
 export class AppComponent {
   title = 'scratchpad';
-  scratchpads = Array<Scratchpad>();
+  scratchpads: Scratchpad[];
   id = 0;
+
+  constructor(private lsService: LocalStorageService) {
+    this.scratchpads = lsService.getItem('scratchpads') || Array<Scratchpad>();
+  }
+
+  @HostListener('window:beforeunload')
+  beforeunloadHandler() {
+    this.lsService.setItem('scratchpads', this.scratchpads);
+  }
 
   addScratchpad() {
     this.scratchpads.push({
       id: this.id,
       name: getLine(),
-      items: []});
+      items: []
+    });
     this.id++;
   }
 
