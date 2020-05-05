@@ -1,13 +1,22 @@
 <div id="app">
     <header>
         <h1>{{title}}</h1>
-        <button class="new" (click)="addScratchpad()">New</button>
+        <form>
+            <form #formElement="ngForm">
+                <input type="text" id="scratchpad" name="scratchpad" 
+                    required placeholder="New Scratchpad" #scratchpadElement="ngModel"
+                    [(ngModel)]="scratchpadInput"/>
+                <button [disabled]="!formElement.form.valid"
+                    (click)="addScratchpad()">Save</button>
+            </form>
+
+        </form>
     </header>
 
     <div class="scratchpads">
         <app-scratchpad
             *ngFor="let scratchpad of scratchpads"
-            class="scratchpad"
+            class="scratchpad scroll"
             [scratchpad]="scratchpad"
             (removeEvent)="remove($event)" >
         </app-scratchpad>

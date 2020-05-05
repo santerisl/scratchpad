@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import Scratchpad from '../Scratchpad';
-import { getLine } from '../app.component';
 import Item from '../Item';
 
 
@@ -12,6 +11,9 @@ import Item from '../Item';
 
 export class ScratchpadComponent implements OnInit {
 
+  itemInput: string;
+  modifyId: number;
+  modifyInput: string;
   @Input() scratchpad: Scratchpad;
   @Output() removeEvent = new EventEmitter<Scratchpad>();
 
@@ -22,15 +24,29 @@ export class ScratchpadComponent implements OnInit {
 
   addItem() {
     this.scratchpad.items.unshift({
+        id: this.scratchpad.itemCount,
         time: new Date(),
-        content: getLine()});
+        content: this.itemInput});
+    this.itemInput = '';
+    this.scratchpad.itemCount++;
   }
 
   removeItem(item: Item) {
-    this.scratchpad.items = this.scratchpad.items.filter(other => item !== other);
+    this.scratchpad.items = this.scratchpad.items.filter(
+      other => item !== other);
+  }
+
+  modifyItem(item: Item) {
+    item.content = this.modifyInput;
+    this.modifyId = undefined;
   }
 
   remove() {
     this.removeEvent.emit(this.scratchpad);
+  }
+
+  modify(item: Item) {
+    this.modifyId = item.id;
+    this.modifyInput = item.content;
   }
 }
