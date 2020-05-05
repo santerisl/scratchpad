@@ -1,0 +1,52 @@
+.item.active {
+    box-shadow: inset 0px 0px 2px blue;
+}
+
+.item:not(.active) .hide-inactive {
+    display: none;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.active .ellipsis {
+    white-space: normal;
+    overflow: auto;
+    text-overflow: unset;
+}
+
+.item input, .item button {
+    width: 100%;
+}
+
+.item {
+    border-radius: 2px;
+    margin: .5rem;
+    background-color: #eee;
+}
+
+.info {
+    background-color: #222;
+    color: #eee;
+}
+
+.info > div {
+    font-size: .8rem;
+    display: inline-block;
+    padding: 0 .25rem;
+    margin: 0 .25rem;
+}
+
+.info button {
+    line-height: .8rem;
+    border: 0;
+}
+
+.content {
+    padding: 1rem;
+}
+
+.info > div:first-child { margin-left: 0; }

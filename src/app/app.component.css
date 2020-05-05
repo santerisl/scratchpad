@@ -4,7 +4,7 @@
     height: 100vh;
 }
 
-.header {
+header {
     background: #000;
     color: #fff;
     flex: 0 0 3rem;
@@ -12,8 +12,8 @@
     display: flex;
     height: 3rem;
 }
-.header h1 { flex: 1 0 auto; }
-.header .new { flex: 0 0 auto; }
+header h1 { flex: 1 0 auto; }
+header .new { flex: 0 0 auto; }
 
 .scratchpads {
     flex: 1 1 0;
@@ -34,56 +34,3 @@
 
 .scratchpad:first-child { margin-left: auto; }
 .scratchpad:last-child { margin-right: auto; }
-
-.item.active {
-    box-shadow: inset 0px 0px 2px blue;
-}
-
-.item:not(.active) .hide-inactive {
-    display: none;
-}
-
-.ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.active .ellipsis {
-    white-space: normal;
-    overflow: auto;
-    text-overflow: unset;
-}
-
-.item input, .item button {
-    width: 100%;
-}
-
-.item {
-    border-radius: 2px;
-    margin: .5rem;
-    background-color: #eee;
-}
-
-.info {
-    background-color: #222;
-    color: #eee;
-}
-
-.info > div {
-    font-size: .8rem;
-    display: inline-block;
-    padding: 0 .25rem;
-    margin: 0 .25rem;
-}
-
-.info button {
-    line-height: .8rem;
-    border: 0;
-}
-
-.content {
-    padding: 1rem;
-}
-
-.info > div:first-child { margin-left: 0; }

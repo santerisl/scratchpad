@@ -1,18 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import Scratchpad from './Scratchpad';
 
-
-interface Scratchpad {
-  id: number;
-  name: string;
-  items: Array<Item>;
-  active?: boolean;
-}
-
-interface Item {
-  time: Date;
-  content: string;
-  active?: boolean;
-}
 
 @Component({
   selector: 'app-root',
@@ -26,17 +14,6 @@ export class AppComponent {
   scratchpads = Array<Scratchpad>();
   id = 0;
 
-  addItem(scratchpad: Scratchpad) {
-    scratchpad.items.unshift({
-        time: new Date(),
-        content: getLine()});
-  }
-
-  removeItem(scratchpad: Scratchpad, item: Item) {
-    scratchpad.items = scratchpad.items.filter(other => item !== other);
-
-  }
-
   addScratchpad() {
     this.scratchpads.push({
       id: this.id,
@@ -45,7 +22,7 @@ export class AppComponent {
     this.id++;
   }
 
-  removeScratchpad(scratchpad: Scratchpad) {
+  remove(scratchpad: Scratchpad) {
     this.scratchpads = this.scratchpads.filter(other => scratchpad !== other);
   }
 }
@@ -61,6 +38,6 @@ const lines = [
   'Esse voluptate laboris cillum do.'
 ];
 
-function getLine(): string {
+export function getLine(): string {
   return lines[Math.floor(Math.random() * lines.length)];
 }
