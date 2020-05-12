@@ -1,5 +1,5 @@
 
-.item:not(.active) .hide-inactive {
+:not(.active) .hide-inactive {
     display: none;
 }
 
@@ -26,38 +26,66 @@
     width: 100%;
 }
 
-.item button:not(:first-child) {
-    margin-left: .5rem;
-}
-
 .item {
     border-bottom: 1px solid #eee;
     margin: 0 1rem;
     margin-bottom: .5rem;
 }
 
-.arrow:hover {
-    border-bottom: 1px solid #ccc;
+.item form:focus-within, .item .modify form {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, .23);
+    background-color: #fff;
 }
 
-.arrow:hover::after {
+.item textarea {
+    width: 100%;
+    resize: none;
+    border: none;
+    background: none;
+    line-height: normal;
+    font-size: 1rem;
+    font-family: unset;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+}
+
+.item textarea:focus, .modify textarea {
+    border: none;
+    outline: none;
+}
+
+.arrow::after {
     content: '';
-    display: block;
-    margin: 0 auto;
+    float: right;
+    margin-top: .4rem;
     width: 0;
     height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
+    border-left: .4rem solid transparent;
+    border-right: .4rem solid transparent;
 }
 
-.active.arrow:hover::after {
-    margin-top: -5px;
-    border-bottom: 5px solid #ccc;
+.active .arrow::after {
+    border-bottom: .4rem solid rgba(0,0,0,.1);
 }
 
-:not(.active).arrow:hover::after {
-    margin-bottom: -6px;
-    border-top: 6px solid #ccc;
+:not(.active) .arrow::after {
+    border-top: .4rem solid rgba(0,0,0,.1);
+}
+
+.active .arrow:hover::after {
+    border-bottom-color: rgba(0,0,0,.3);
+}
+
+:not(.active) .arrow:hover::after {
+    border-top-color: rgba(0,0,0,.3);
+}
+
+.arrow {
+    cursor: pointer;
 }
 
 .info > div {
@@ -66,14 +94,23 @@
     display: inline-block;
 }
 
-.info button {
-    color: inherit;
+.actions {
+    display: flex;
+}
+
+.actions button {
+    flex: 0;
+    padding: .25rem;
+}
+
+.actions button {
+    color: #666;
     line-height: .8rem;
     border: 0;
     background: none;
 }
 
-.info button:hover {
+.actions button:hover {
     color: #000;
     text-decoration: underline;
 }

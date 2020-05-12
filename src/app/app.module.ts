@@ -5,11 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { ScratchpadComponent } from './scratchpad/scratchpad.component';
 import { LocalStorageService } from './local-storage.service';
+import { ResizeDirective } from './resize.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ScratchpadComponent
+    ScratchpadComponent,
+    ResizeDirective
   ],
   imports: [
     BrowserModule,
