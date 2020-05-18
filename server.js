@@ -1,48 +1,97 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const fs = require("fs");
 const cors = require('cors')
 const shortid = require('shortid')
 const PORT = process.env.PORT || 3000
 
-const sqlite3 = require('sqlite3')
-const sqlite = require('sqlite')
+const db = require('better-sqlite3')(':memory:', { verbose: console.log });
 
 app.use(cors())
 app.use(bodyParser.json())
 
-app.use(express.static(__dirname + '/dist/scratchpad/'));
+app.use(express.static(__dirname + '/dist/scratchpad/'))
 
-sqlite.open({
-  filename: ':memory:',
-  driver: sqlite3.Database
-}).then(async (db) => {
-  await db.exec('CREATE TABLE IF NOT EXISTS scratchpad (id TEXT PRIMARY KEY, name TEXT)')
+const dbInit = fs.readFileSync('create.sql', 'utf8')
+db.exec(dbInit);
 
-  for(var i = 0; i < 10; i++) {
-    await db.run('INSERT INTO scratchpad(id, name) VALUES (:id, :name)', {
-      ':id': shortid.generate(),
-      ':name': 'sp'+i
-    })
+const scratchpads = db.prepare('SELECT id, name FROM scratchpad')
+
+const selectScratchpad = db.prepare('SELECT id, name FROM scratchpad WHERE id = ?');
+const insertScratchpad = db.prepare('INSERT INTO scratchpad (id, name) VALUES (:id, :name)')
+const deleteScratchpad = db.prepare('DELETE FROM scratchpad WHERE id = ?')
+const updateScratchpad = db.prepare('UPDATE scratchpad SET name = :name WHERE id = ?')
+
+const insertItem = db.prepare('INSERT INTO item (content, time, sid) VALUES (:content, :time, ?)')
+const deleteItem = db.prepare('DELETE FROM item WHERE sid = ? AND id = ?')
+const updateItem = db.prepare('UPDATE item SET content = :content WHERE sid = ? AND id = ?')
+const selectItems = db.prepare('SELECT id, content, time FROM item WHERE sid = ? ORDER BY time DESC')
+
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`))
+
+app.get('/api/scratchpad', (req, res) => {
+  res.send(scratchpads.all())
+});
+
+app.post('/api/scratchpad', (req, res) => {
+  const data = {
+    id: shortid.generate(),
+    name: req.body.name || 'Scratchpad'
   }
+  insertScratchpad.run(data)
+  res.status(201).send(data)
+});
 
-  app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`)
-  })
+app.delete('/api/scratchpad/:id', (req, res) => {
+  const result = deleteScratchpad.run(req.params.id)
+  res.sendStatus(result.changes > 0 ? 204 : 404)
+})
 
-  app.get('/api', (req, res) => {
-    db.all('SELECT * FROM scratchpad').then(result => {
-      res.send(result)
-    })
-  });
+app.put('/api/scratchpad/:id', (req, res) => {
+  if(req.body.name) {
+    const data = { name: req.body.name}
+    const result = updateScratchpad.run(data, req.params.id)
+    res.sendStatus( result.changes > 0 ? 204 : 404)
+  } else {
+    res.sendStatus(400)
+  }
+})
 
-  app.get('/api/:id', (req, res) => {
-    db.get('SELECT name FROM scratchpad WHERE id = ?', req.params.id).then(result => {
-      if(result) {
-        res.send({ name: result.name })
-      } else {
-        res.sendStatus(404);
-      }
-    })
-  });
+app.get('/api/scratchpad/:id', (req, res) => {
+  const result = selectScratchpad.get(req.params.id);
+  if(result) {
+    res.send({...result, items: selectItems.all(req.params.id)})
+  } else {
+    res.sendStatus(404)
+  }
+});
+
+app.post('/api/scratchpad/:id/items', (req, res) => {
+  const item = {
+    time: Date.now(),
+    content: req.body.content || ''
+  }
+  const result = insertItem.run(item, req.params.id)
+  console.log(result)
+  if(result.changes > 0) {
+    res.status(201).send({...item, id: result.lastInsertRowid})
+  } else {
+    res.sendStatu(404)
+  }
+});
+
+app.delete('/api/scratchpad/:id/items/:itemId', (req, res) => {
+  const result = deleteItem.run(req.params.id, req.params.itemId)
+  res.sendStatus(result.changes > 0 ? 204 : 404)
+})
+
+app.put('/api/scratchpad/:id/items/:itemId', (req, res) => {
+  if(req.body.content) {
+    const data = { itemid: req.params.itemId, content: req.body.content}
+    const result = updateItem.run(data, req.params.id, req.params.itemId)
+    res.status(result.changes > 0 ? 204: 404)
+  } else {
+    res.sendStatus(400)
+  }
 })
