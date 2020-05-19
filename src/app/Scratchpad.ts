@@ -1,9 +1,10 @@
 import Item from './Item';
 
 export default interface Scratchpad {
-  id: number;
-  itemCount: any;
+  id: string;
   name: string;
   items: Array<Item>;
+
+  itemCount?: number;
   active?: boolean;
 }

@@ -1,11 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { ScratchpadComponent } from './scratchpad/scratchpad.component';
-import { LocalStorageService } from './local-storage.service';
+import { LocalStorageService } from './service/local-storage.service';
 import { ResizeDirective } from './resize.directive';
+import { RemoteStorageService } from './service/remote-storage.service';
 
 @NgModule({
   declarations: [
@@ -15,9 +17,10 @@ import { ResizeDirective } from './resize.directive';
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [LocalStorageService],
+  providers: [LocalStorageService, RemoteStorageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

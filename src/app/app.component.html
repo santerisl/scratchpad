@@ -6,20 +6,23 @@
                 <input type="text" id="scratchpad" name="scratchpad" 
                     required placeholder="New Scratchpad" #scratchpadElement="ngModel"
                     [(ngModel)]="scratchpadInput"/>
+                <label for="remote">remote?</label>
+                <input type="checkbox" id="remote" name="remote"
+                    [(ngModel)]="remoteInput"/>
                 <button [disabled]="!formElement.form.valid"
                     (click)="addScratchpad()">Save</button>
             </form>
-
         </form>
     </header>
 
     <div class="scratchpads">
         <app-scratchpad
-            *ngFor="let scratchpad of scratchpads"
+            *ngFor="let sp of scratchpadIds"
             class="scratchpad scroll"
-            [scratchpad]="scratchpad"
+            [ngClass]="{'remote': sp.remote}"
+            [id]="sp.id"
+            [storageService]="sp.remote ? rsService : lsService"
             (removeEvent)="remove($event)" >
         </app-scratchpad>
-    
     </div>
 </div>

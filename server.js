@@ -73,7 +73,6 @@ app.post('/api/scratchpad/:id/items', (req, res) => {
     content: req.body.content || ''
   }
   const result = insertItem.run(item, req.params.id)
-  console.log(result)
   if(result.changes > 0) {
     res.status(201).send({...item, id: result.lastInsertRowid})
   } else {
@@ -90,7 +89,7 @@ app.put('/api/scratchpad/:id/items/:itemId', (req, res) => {
   if(req.body.content) {
     const data = { itemid: req.params.itemId, content: req.body.content}
     const result = updateItem.run(data, req.params.id, req.params.itemId)
-    res.status(result.changes > 0 ? 204: 404)
+    res.sendStatus(result.changes > 0 ? 204 : 404)
   } else {
     res.sendStatus(400)
   }

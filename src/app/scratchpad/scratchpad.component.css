@@ -1,8 +1,4 @@
 
-:not(.active) .hide-inactive {
-    display: none;
-}
-
 .ellipsis {
     white-space: nowrap;
     overflow: hidden;
@@ -68,20 +64,22 @@
     border-right: .4rem solid transparent;
 }
 
-.active .arrow::after {
-    border-bottom: .4rem solid rgba(0,0,0,.1);
+.arrow::after {
+    border-bottom: none;
+    border-top: .4rem solid rgba(0,0,0,.1);
 }
 
-:not(.active) .arrow::after {
-    border-top: .4rem solid rgba(0,0,0,.1);
+.active .arrow::after {
+    border-bottom: .4rem solid rgba(0,0,0,.1);
+    border-top: none;
+}
+
+.arrow:hover::after {
+    border-top-color: rgba(0,0,0,.3);
 }
 
 .active .arrow:hover::after {
     border-bottom-color: rgba(0,0,0,.3);
-}
-
-:not(.active) .arrow:hover::after {
-    border-top-color: rgba(0,0,0,.3);
 }
 
 .arrow {

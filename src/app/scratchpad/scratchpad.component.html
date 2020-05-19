@@ -1,57 +1,63 @@
-<div class="header"
+<div *ngIf="scratchpad !== undefined">
+    <div class="header"
     (click)="scratchpad.active = !scratchpad.active"
     [ngClass]="{'active': scratchpad.active}">
 
-    <div class="info arrow">
-        <div>Info</div>
-    </div>
-    <div class="hide-inactive actions">
-        <button (click)="remove()">remove</button>
-    </div>
-    <div>
-        <h3 class="content ellipsis">{{scratchpad.name}}</h3>
-    </div>
-
-</div>
-<div class="item">
-    <form #formElement="ngForm">
-        <textarea [appResize] type="text" id="item" name="item" #itemElement="ngModel"
-            (keyup.enter)="addItem()" placeholder="New item" required
-            [(ngModel)]="itemInput"></textarea>
-        <div class="actions">
-            <button
-                [disabled]="!formElement.form.valid"
-                (click)="addItem()">Save</button>
+        <div class="info arrow">
+            <div>{{scratchpad.id}}</div>
         </div>
-    </form>
-</div>
-
-<div class="item" *ngFor="let item of scratchpad.items"
-    [ngClass]="{'active': item.active}">
-
-    <div class="info arrow" (click)="item.active = !item.active">
-        <div>{{item.time | date:'yyyy-MM-dd HH:mm'}}</div>
+        <div *ngIf="scratchpad.active" class="actions">
+            <button (click)="remove()">remove</button>
+        </div>
+        <div>
+            <h3 class="content ellipsis">{{scratchpad.name}}</h3>
+        </div>
     </div>
-    <div class="hide-inactive actions">
-        <button (click)="modify(item)">edit </button>
-        <button (click)="removeItem(item)">remove</button>
-    </div>
-    <div *ngIf="modifyId !== item.id" class="content ellipsis">
-        {{item.content}}
-    </div>
-    <div *ngIf="modifyId === item.id" class="modify">
+    <div class="item">
         <form #formElement="ngForm">
-            <textarea [appResize] type="text" id="modifyItem" name="modifyItem"
-                (keyup.enter)="modifyItem(item)"
-                (keyup.escape)="modifyId = undefined"
-                #modifyItemElement="ngModel" required
-                [(ngModel)]="modifyInput"></textarea>
+            <textarea [appResize] type="text" id="item" name="item" #itemElement="ngModel"
+                (keyup.enter)="addItem()" placeholder="New item" required
+                [(ngModel)]="itemInput"></textarea>
             <div class="actions">
-                <button (click)="modifyId = undefined">cancel</button>
                 <button
                     [disabled]="!formElement.form.valid"
-                    (click)="modifyItem(item)">save</button>
+                    (click)="addItem()">Save</button>
             </div>
         </form>
     </div>
+
+    <div class="item" *ngFor="let item of scratchpad.items"
+        [ngClass]="{'active': item.active}">
+
+        <div class="info arrow" (click)="item.active = !item.active">
+            <div>{{item.time | date:'yyyy-MM-dd HH:mm'}}</div>
+        </div>
+        <div *ngIf="item.active" class="actions">
+            <button (click)="modify(item)">edit </button>
+            <button (click)="removeItem(item)">remove</button>
+        </div>
+        <div *ngIf="modifyId !== item.id" class="content ellipsis">
+            {{item.content}}
+        </div>
+        <div *ngIf="modifyId === item.id" class="modify">
+            <form #formElement="ngForm">
+                <textarea [appResize] type="text" id="modifyItem" name="modifyItem"
+                    (keyup.enter)="modifyItem(item)"
+                    (keyup.escape)="modifyId = undefined"
+                    #modifyItemElement="ngModel" required
+                    [(ngModel)]="modifyInput"></textarea>
+                <div class="actions">
+                    <button (click)="modifyId = undefined">cancel</button>
+                    <button
+                        [disabled]="!formElement.form.valid"
+                        (click)="modifyItem(item)">save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<div *ngIf="scratchpad === undefined">
+    <span>Loading / Error</span>
 </div>

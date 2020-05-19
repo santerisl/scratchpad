@@ -1,42 +1,47 @@
-import { Component, HostListener } from '@angular/core';
-import Scratchpad from './Scratchpad';
-import { LocalStorageService } from './local-storage.service';
+import { Component, OnInit } from '@angular/core';
+import { LocalStorageService } from './service/local-storage.service';
+import { RemoteStorageService } from './service/remote-storage.service';
+import StorageService from './StorageService';
 
+interface ScratchpadId {
+  id: string;
+  remote: boolean;
+}
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
-
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'scratchpad';
   scratchpadInput: string;
-  scratchpads: Scratchpad[];
-  id = 0;
+  remoteInput: boolean;
+  scratchpadIds: ScratchpadId[];
 
-  constructor(private lsService: LocalStorageService) {
-    this.scratchpads = lsService.getItem('scratchpads') || Array<Scratchpad>();
-  }
+  // localIds: string[];
+  // remoteIds: string[];
 
-  @HostListener('window:beforeunload')
-  beforeUnload() {
-    this.lsService.setItem('scratchpads', this.scratchpads);
+  constructor(
+    public lsService: LocalStorageService,
+    public rsService: RemoteStorageService) {}
+
+  ngOnInit() {
+    this.scratchpadIds = [
+      ...this.lsService.getIds().map(id => ({id, remote: false})),
+      ...this.rsService.getIds().map(id => ({id, remote: true}))
+    ];
   }
 
   addScratchpad() {
-    this.scratchpads.push({
-      id: this.id,
-      itemCount: 0,
-      name: this.scratchpadInput,
-      items: []
-    });
+    const storage: StorageService = this.remoteInput ? this.rsService : this.lsService;
+    storage.createScratchpad(this.scratchpadInput)
+      .then((id: string) => this.scratchpadIds.push({id, remote: this.remoteInput}))
+      .catch(error => console.error('Add', error));
     this.scratchpadInput = '';
-    this.id++;
   }
 
-  remove(scratchpad: Scratchpad) {
-    this.scratchpads = this.scratchpads.filter(other => scratchpad !== other);
+  remove(id: string) {
+    this.scratchpadIds = this.scratchpadIds.filter(other => other.id !== id);
   }
 }

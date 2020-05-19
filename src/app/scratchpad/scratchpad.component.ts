@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import Scratchpad from '../Scratchpad';
 import Item from '../Item';
+import StorageService from '../StorageService';
 
 
 @Component({
@@ -14,35 +15,44 @@ export class ScratchpadComponent implements OnInit {
   itemInput: string;
   modifyId: number;
   modifyInput: string;
-  @Input() scratchpad: Scratchpad;
-  @Output() removeEvent = new EventEmitter<Scratchpad>();
+  scratchpad: Scratchpad;
+  @Input() storageService: StorageService;
+  @Input() id: string;
+  @Output() removeEvent = new EventEmitter<string>();
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
+    this.storageService.loadScratchpad(this.id)
+      .then(sp => this.scratchpad = sp)
+      .catch(error => console.error('Load', error));
   }
 
   addItem() {
-    this.scratchpad.items.unshift({
-        id: this.scratchpad.itemCount,
-        time: new Date(),
-        content: this.itemInput});
+    this.storageService.addItem(this.id, this.itemInput)
+      .then(item => this.scratchpad.items.unshift(item))
+      .catch(error => console.error('Add Item', error));
     this.itemInput = '';
-    this.scratchpad.itemCount++;
   }
 
   removeItem(item: Item) {
-    this.scratchpad.items = this.scratchpad.items.filter(
-      other => item !== other);
+    this.storageService.removeItem(this.id, item.id)
+      .then(() => this.scratchpad.items = this.scratchpad.items.filter(
+        other => item !== other))
+      .catch(error => console.error('Remove Item', error));
   }
 
   modifyItem(item: Item) {
-    item.content = this.modifyInput;
+    this.storageService.modifyItem(this.id, item.id, this.modifyInput)
+      .then(() => item.content = this.modifyInput)
+      .catch(error => console.error('Modify Item', error));
     this.modifyId = undefined;
   }
 
   remove() {
-    this.removeEvent.emit(this.scratchpad);
+    this.storageService.removeScratchpad(this.id)
+      .then(() => this.removeEvent.emit(this.id))
+      .catch(error => console.error('Remove', error));
   }
 
   modify(item: Item) {

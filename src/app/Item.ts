@@ -1,6 +1,6 @@
 export default interface Item {
-    id: number;
-    time: Date;
-    content: string;
-    active?: boolean;
+  id: number;
+  time: number;
+  content: string;
+  active?: boolean;
 }
