@@ -1,14 +1,15 @@
 import Scratchpad from './Scratchpad';
 import Item from './Item';
+import ScratchpadView from './ScratchpadView';
 
 export default interface StorageService {
-  createScratchpad(name: string): Promise<string>;
-  loadScratchpad(id: string): Promise<Scratchpad>;
-  removeScratchpad(id: string): Promise<void>;
+  createScratchpad(name: string, auth?: string): Promise<string>;
+  loadScratchpad(id: ScratchpadView): Promise<Scratchpad>;
+  removeScratchpad(id: ScratchpadView): Promise<void>;
 
-  addItem(id: string, content: string): Promise<Item>;
-  removeItem(id: string, itemId: number): Promise<void>;
-  modifyItem(id: string, itemId: number, content: string): Promise<void>;
+  addItem(id: ScratchpadView, content: string): Promise<Item>;
+  removeItem(id: ScratchpadView, itemId: number): Promise<void>;
+  modifyItem(id: ScratchpadView, itemId: number, content: string): Promise<void>;
 
-  getIds(): string[];
+  getIds(): ScratchpadView[];
 }

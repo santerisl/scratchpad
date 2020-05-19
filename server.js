@@ -6,7 +6,7 @@ const cors = require('cors')
 const shortid = require('shortid')
 const PORT = process.env.PORT || 3000
 
-const db = require('better-sqlite3')(':memory:', { verbose: console.log });
+const db = require('better-sqlite3')(':memory:');
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -16,10 +16,12 @@ app.use(express.static(__dirname + '/dist/scratchpad/'))
 const dbInit = fs.readFileSync('create.sql', 'utf8')
 db.exec(dbInit);
 
-const scratchpads = db.prepare('SELECT id, name FROM scratchpad')
+const scratchpads = db.prepare('SELECT * FROM scratchpad')
+
+const selectScratchpadAuth = db.prepare('SELECT auth FROM scratchpad WHERE id = ?');
 
 const selectScratchpad = db.prepare('SELECT id, name FROM scratchpad WHERE id = ?');
-const insertScratchpad = db.prepare('INSERT INTO scratchpad (id, name) VALUES (:id, :name)')
+const insertScratchpad = db.prepare('INSERT INTO scratchpad (id, auth, name) VALUES (:id, :auth, :name)')
 const deleteScratchpad = db.prepare('DELETE FROM scratchpad WHERE id = ?')
 const updateScratchpad = db.prepare('UPDATE scratchpad SET name = :name WHERE id = ?')
 
@@ -37,11 +39,24 @@ app.get('/api/scratchpad', (req, res) => {
 app.post('/api/scratchpad', (req, res) => {
   const data = {
     id: shortid.generate(),
-    name: req.body.name || 'Scratchpad'
+    name: req.body.name || 'Scratchpad',
+    auth: req.body.auth || null
   }
   insertScratchpad.run(data)
   res.status(201).send(data)
 });
+
+
+app.use('/api/scratchpad/:id', (req, res, next) => {
+  const result = selectScratchpadAuth.get(req.params.id);
+  if(!result) {
+    res.sendStatus(404)
+  } else if(result.auth && req.headers.authorization !== result.auth) {
+    res.sendStatus(403)
+  } else {
+    next()
+  }
+})
 
 app.delete('/api/scratchpad/:id', (req, res) => {
   const result = deleteScratchpad.run(req.params.id)

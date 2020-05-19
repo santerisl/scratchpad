@@ -1,50 +1,72 @@
 import { Injectable } from '@angular/core';
 import StorageService from '../StorageService';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Scratchpad from '../Scratchpad';
 import Item from '../Item';
 import { LocalStorageService } from './local-storage.service';
+import ScratchpadView from '../ScratchpadView';
 
 @Injectable()
 export class RemoteStorageService implements StorageService {
 
   constructor(private http: HttpClient, private lsService: LocalStorageService) {}
 
-  loadScratchpad(id: string): Promise<Scratchpad> {
-    return this.http.get<Scratchpad>(`/api/scratchpad/${id}`).toPromise();
+  async createScratchpad(name: string, auth?: string): Promise<string> {
+    const sp = await this.http.post<Scratchpad>('/api/scratchpad', { name, auth }).toPromise();
+    this.addId(sp.id, auth);
+    return sp.id;
   }
 
-  createScratchpad(name: string): Promise<string> {
-    return this.http.post<Scratchpad>('/api/scratchpad', {name} ).toPromise()
-      .then((sp) => {
-          this.addId(sp.id);
-          return sp.id;
-        });
-  }
-  removeScratchpad(id: string): Promise<void> {
-    return this.http.delete<void>(`/api/scratchpad/${id}`).toPromise()
-      .then(() => this.removeId(id));
+  loadScratchpad(view: ScratchpadView): Promise<Scratchpad> {
+    return this.http.get<Scratchpad>(
+      `/api/scratchpad/${view.id}`,
+      this.getHeader(view)).toPromise();
   }
 
-  addItem(id: string, content: string): Promise<Item> {
-    return this.http.post<Item>(`/api/scratchpad/${id}/items`, {content} ).toPromise();
-  }
-  removeItem(id: string, itemId: number): Promise<void> {
-    return this.http.delete<void>(`/api/scratchpad/${id}/items/${itemId}`).toPromise();
-  }
-  modifyItem(id: string, itemId: number, content: string): Promise<void> {
-    return this.http.put<void>(`/api/scratchpad/${id}/items/${itemId}`, {content} ).toPromise();
+  async removeScratchpad(view: ScratchpadView): Promise<void> {
+    await this.http.delete<void>(
+      `/api/scratchpad/${view.id}`,
+      this.getHeader(view)).toPromise();
+    return this.removeId(view.id);
   }
 
-  public getIds(): string[] {
-    return this.lsService.getItem('remoteIds', []);
+  addItem(view: ScratchpadView, content: string): Promise<Item> {
+    return this.http.post<Item>(
+      `/api/scratchpad/${view.id}/items`, {content},
+      this.getHeader(view)).toPromise();
+  }
+  removeItem(view: ScratchpadView, itemId: number): Promise<void> {
+    return this.http.delete<void>(
+      `/api/scratchpad/${view.id}/items/${itemId}`,
+      this.getHeader(view)).toPromise();
+  }
+
+  modifyItem(view: ScratchpadView, itemId: number, content: string): Promise<void> {
+    return this.http.put<void>(
+      `/api/scratchpad/${view.id}/items/${itemId}`, {content},
+      this.getHeader(view)).toPromise();
+  }
+
+  public getIds(): ScratchpadView[] {
+    return this.lsService.getItem('remoteIds', []) as ScratchpadView[];
   }
 
   public removeId(id: string) {
-    this.lsService.setItem('remoteIds', this.getIds().filter(other => id !== other));
+    this.lsService.setItem('remoteIds', this.getIds().filter(other => other.id !== id));
   }
 
-  public addId(id: string) {
-    this.lsService.setItem('remoteIds', [...this.getIds(), id]);
+  public addId(id: string, auth?: string) {
+    const remoteId = {id, remote: true, auth};
+    this.lsService.setItem('remoteIds', [...this.getIds(), remoteId]);
+  }
+
+  private getHeader(view: ScratchpadView) {
+    if (view.auth) {
+      return {
+        headers: new HttpHeaders().set('Authorization', `${view.auth}`)
+      };
+    } else {
+      return {};
+    }
   }
 }

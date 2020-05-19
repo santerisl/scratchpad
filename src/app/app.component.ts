@@ -2,11 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from './service/local-storage.service';
 import { RemoteStorageService } from './service/remote-storage.service';
 import StorageService from './StorageService';
-
-interface ScratchpadId {
-  id: string;
-  remote: boolean;
-}
+import ScratchpadView from './ScratchpadView';
 
 @Component({
   selector: 'app-root',
@@ -18,42 +14,49 @@ export class AppComponent implements OnInit {
 
   scratchpadNameInput: string;
   remoteInput: boolean;
+  scratchpadPasswordInput: string;
 
   scratchpadIdInput: string;
 
-  scratchpadIds: ScratchpadId[];
-  // localIds: string[];
-  // remoteIds: string[];
+  scratchpadViews: ScratchpadView[];
 
   constructor(
     public lsService: LocalStorageService,
     public rsService: RemoteStorageService) {}
 
   ngOnInit() {
-    this.scratchpadIds = [
-      ...this.lsService.getIds().map(id => ({id, remote: false})),
-      ...this.rsService.getIds().map(id => ({id, remote: true}))
+    this.scratchpadViews = [
+      ...this.lsService.getIds(),
+      ...this.rsService.getIds()
     ];
   }
 
   addScratchpad() {
     const storage: StorageService = this.remoteInput ? this.rsService : this.lsService;
-    storage.createScratchpad(this.scratchpadNameInput)
-      .then((id: string) => this.scratchpadIds.push({id, remote: this.remoteInput}))
+    const auth = this.inputSecured() ? this.scratchpadPasswordInput : null;
+
+    storage.createScratchpad(this.scratchpadNameInput, auth)
+      .then((id: string) => this.scratchpadViews.push({
+        id, auth, remote: this.remoteInput
+      }))
       .catch(error => console.error('Add', error));
     this.scratchpadNameInput = '';
+    this.scratchpadPasswordInput = '';
+  }
+
+  inputSecured() {
+    return this.scratchpadPasswordInput
+      && this.scratchpadPasswordInput.length > 0;
   }
 
   addId() {
-    this.scratchpadIds.push({id: this.scratchpadIdInput, remote: true});
-    this.lsService.setItem('remoteIds', [
-      ...this.rsService.getIds(), this.scratchpadIdInput
-    ]);
+    this.scratchpadViews.push({id: this.scratchpadIdInput, remote: true});
+    this.rsService.addId(this.scratchpadIdInput);
     this.scratchpadIdInput = '';
   }
 
   removeScratchpad(removedScratchpadId: string) {
-    this.scratchpadIds = this.scratchpadIds.filter(
+    this.scratchpadViews = this.scratchpadViews.filter(
       scratchpadId => scratchpadId.id !== removedScratchpadId);
     this.rsService.removeId(removedScratchpadId);
   }

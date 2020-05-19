@@ -7,3 +7,8 @@
     border-top: 0;
     padding: .1rem;
 }
+
+.header:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}

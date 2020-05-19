@@ -6,11 +6,10 @@
 
     <div class="scratchpads">
         <app-scratchpad
-            *ngFor="let sp of scratchpadIds"
+            *ngFor="let sp of scratchpadViews"
             class="scratchpad card scroll"
             [ngClass]="{'remote': sp.remote}"
-            [id]="sp.id"
-            [storageService]="sp.remote ? rsService : lsService"
+            [scratchpadView]="sp"
             (removeScratchpadEvent)="removeScratchpad($event)" >
         </app-scratchpad>
     </div>
@@ -25,17 +24,24 @@
                 [(ngModel)]="scratchpadNameInput"/>
 
             <div class="pad-y">
-                <div class="info">Storage</div>
+                <div class="info">Storage (will be saved to {{remoteInput ? "remote" : "local"}} storage)</div>
                 <input type="checkbox" id="remote" name="remote"
                     [(ngModel)]="remoteInput"/>
-                    <label for="remote" class="toggle">
-                        <span [ngClass]="{'active': !remoteInput}">Local</span>
-                        <span [ngClass]="{'active': remoteInput}">Remote</span>
-                    </label>
+                <label for="remote" class="toggle">
+                    <span [ngClass]="{'active': !remoteInput}">Local</span>
+                    <span [ngClass]="{'active': remoteInput}">Remote</span>
+                </label>
+
+                <div *ngIf="remoteInput" class="pad-y">
                     <div class="info">
-                        Will be saved to {{remoteInput ? "remote" : "local"}} storage
+                        Secure
+                        (will {{inputSecured() ? "" : "not"}} be secured)
                     </div>
+                    <input type="text" id="password" name="password"
+                        placeholder="Password" #passwordElement
+                        [(ngModel)]="scratchpadPasswordInput"/>
                 </div>
+            </div>
 
             <button [disabled]="!createForm.form.valid"
                 (click)="addScratchpad(); newScratchpadPopup.hide();">Create</button>

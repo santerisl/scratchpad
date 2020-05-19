@@ -1,14 +1,15 @@
 <div *ngIf="scratchpad !== undefined">
     <div class="header" (click)="editScratchpadPopup.show()">
-        <div class="info"><div>{{scratchpad.id}}</div></div>
+        <div class="info">{{scratchpad.id}}</div>
         <div><h3 class="content ellipsis">{{scratchpad.name}}</h3></div>
     </div>
     <button class="item click new-item"
         (click)="newItemPopup.show()">New item</button>
 
     <app-item *ngFor="let item of scratchpad.items"
-        [id]="scratchpad.id" [item]="item"
-        [storageService]="storageService"
+        
+        [item]="item"
+        (modifyItemEvent)="modifyItem($event)"
         (removeItemEvent)="removeItem($event)">
     </app-item>
 
@@ -32,13 +33,58 @@
     
     <app-popup #editScratchpadPopup headerText="{{scratchpad.name}}">
         <div class="item">
+            <div class="info">ID</div>
+            <span>{{scratchpadView.id}}</span>
+        </div>
+        <div class="item">
             <div class="info">Actions</div>
             <button (click)="remove()">remove</button>
+            <button *ngIf="scratchpadView.remote"(click)="hide()">hide</button>
+            <button *ngIf="scratchpadView.auth" (click)="logout()">Logout</button>
         </div>
     </app-popup>
 </div>
 
 <div *ngIf="scratchpad === undefined">
-    <span>Loading / Error</span>
-    <button (click)="removeScratchpadEvent.emit(id)">Remove</button>
+    <div [ngSwitch]="errorStatus">
+        <div *ngSwitchCase="undefined">
+            <span>Loading</span>
+        </div>
+        <div *ngSwitchCase="404">
+            <div class="header">
+                <div class="info">{{scratchpadView.id}}</div>
+                <div><h3>Not Found</h3></div>
+            </div>
+            <div class="item">
+                <div class="info">Actions</div>
+                <button (click)="removeScratchpadEvent.emit(scratchpadView.id)">Remove</button>
+            </div>
+        </div>
+        <div *ngSwitchCase="403">
+            <div class="header">
+                <div class="info">{{scratchpadView.id}}</div>
+                <div><h3>Forbidden</h3></div>
+            </div>
+            <div class="item">
+                <form #authenticationForm="ngForm" autocomplete="off">
+                    <div class="pad-y">
+                        <label class="info" for="item">Password</label>
+                        <input type="text" id="password" name="password"
+                            #passInputElement required />
+                    </div>
+                    <button
+                        [disabled]="!authenticationForm.form.valid"
+                        (click)="authenticate(passInputElement.value); passInputElement.value = ''">Login</button>
+                    <span *ngIf="triedLogin">Login failed</span>
+                </form>
+            </div>
+            <div class="item">
+                <div class="info">Actions</div>
+                <button (click)="removeScratchpadEvent.emit(scratchpadView.id)">Remove</button>
+            </div>
+        </div>
+        <div *ngSwitchDefault>
+            <span>Error</span>
+        </div>
+    </div>
 </div>

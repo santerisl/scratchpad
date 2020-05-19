@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import StorageService from '../StorageService';
 import Scratchpad from '../Scratchpad';
 import Item from '../Item';
+import ScratchpadView from '../ScratchpadView';
 
 @Injectable()
 export class LocalStorageService implements StorageService {
@@ -19,27 +20,27 @@ export class LocalStorageService implements StorageService {
     });
   }
 
-  loadScratchpad(id: string): Promise<Scratchpad> {
+  loadScratchpad(view: ScratchpadView): Promise<Scratchpad> {
     return new Promise<Scratchpad>((resolve, reject) => {
-      const sp: Scratchpad = this.getItem(id);
+      const sp: Scratchpad = this.getItem(view.id);
       if (sp) {
         resolve(sp);
       } else {
-        reject('Not found');
+        reject({status: 404});
       }
     });
   }
 
-  removeScratchpad(id: string): Promise<void> {
+  removeScratchpad(view: ScratchpadView): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      window.localStorage.removeItem(id);
+      window.localStorage.removeItem(view.id);
       resolve();
     });
   }
 
-  addItem(id: string, content: string): Promise<Item> {
+  addItem(view: ScratchpadView, content: string): Promise<Item> {
     return new Promise<Item>((resolve, reject) => {
-      const sp: Scratchpad = this.getItem(id);
+      const sp: Scratchpad = this.getItem(view.id);
       let itemId = Math.max(...sp.items.map(i => i.id), 0) + 1;
       const item: Item = {
         id: itemId++,
@@ -48,42 +49,40 @@ export class LocalStorageService implements StorageService {
       };
       sp.items.unshift(item);
 
-      this.setItem(id, sp);
+      this.setItem(view.id, sp);
       resolve(item);
     });
   }
 
-  removeItem(id: string, itemId: number): Promise<void> {
+  removeItem(view: ScratchpadView, itemId: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const sp: Scratchpad = this.getItem(id);
+      const sp: Scratchpad = this.getItem(view.id);
       sp.items = sp.items.filter(other => other.id !== itemId);
-      this.setItem(id, sp);
+      this.setItem(view.id, sp);
       resolve();
     });
 
   }
 
-  modifyItem(id: string, itemId: number, content: string): Promise<void> {
-    console.log(id, itemId, content);
+  modifyItem(view: ScratchpadView, itemId: number, content: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const sp: Scratchpad = this.getItem(id);
-      console.log(sp);
+      const sp: Scratchpad = this.getItem(view.id);
       sp.items.map(item => {
         if (item.id === itemId) {
           item.content = content;
         }
       });
-      this.setItem(id, sp);
+      this.setItem(view.id, sp);
       resolve();
     });
   }
 
-  public getIds(): string[] {
-    const ids: string[] = [];
+  public getIds(): ScratchpadView[] {
+    const ids: ScratchpadView[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const id = localStorage.key(i);
       if (id.startsWith('local:')) {
-        ids.push(id);
+        ids.push({id, remote: false});
       }
     }
     return ids;
