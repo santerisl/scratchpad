@@ -64,8 +64,10 @@ export class LocalStorageService implements StorageService {
   }
 
   modifyItem(id: string, itemId: number, content: string): Promise<void> {
+    console.log(id, itemId, content);
     return new Promise<void>((resolve, reject) => {
       const sp: Scratchpad = this.getItem(id);
+      console.log(sp);
       sp.items.map(item => {
         if (item.id === itemId) {
           item.content = content;

@@ -17,15 +17,13 @@ export class RemoteStorageService implements StorageService {
   createScratchpad(name: string): Promise<string> {
     return this.http.post<Scratchpad>('/api/scratchpad', {name} ).toPromise()
       .then((sp) => {
-          this.lsService.setItem('remoteIds', [...this.getIds(), sp.id]);
+          this.addId(sp.id);
           return sp.id;
         });
   }
   removeScratchpad(id: string): Promise<void> {
     return this.http.delete<void>(`/api/scratchpad/${id}`).toPromise()
-      .then(() => {
-        this.lsService.setItem('remoteIds', this.getIds().filter(other => id !== other));
-      });
+      .then(() => this.removeId(id));
   }
 
   addItem(id: string, content: string): Promise<Item> {
@@ -40,5 +38,13 @@ export class RemoteStorageService implements StorageService {
 
   public getIds(): string[] {
     return this.lsService.getItem('remoteIds', []);
+  }
+
+  public removeId(id: string) {
+    this.lsService.setItem('remoteIds', this.getIds().filter(other => id !== other));
+  }
+
+  public addId(id: string) {
+    this.lsService.setItem('remoteIds', [...this.getIds(), id]);
   }
 }

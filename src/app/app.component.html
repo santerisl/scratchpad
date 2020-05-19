@@ -1,28 +1,56 @@
 <div id="app">
     <header>
         <h1>{{title}}</h1>
-        <form>
-            <form #formElement="ngForm">
-                <input type="text" id="scratchpad" name="scratchpad" 
-                    required placeholder="New Scratchpad" #scratchpadElement="ngModel"
-                    [(ngModel)]="scratchpadInput"/>
-                <label for="remote">remote?</label>
-                <input type="checkbox" id="remote" name="remote"
-                    [(ngModel)]="remoteInput"/>
-                <button [disabled]="!formElement.form.valid"
-                    (click)="addScratchpad()">Save</button>
-            </form>
-        </form>
+        <button (click)="newScratchpadPopup.show()">Add</button>
     </header>
 
     <div class="scratchpads">
         <app-scratchpad
             *ngFor="let sp of scratchpadIds"
-            class="scratchpad scroll"
+            class="scratchpad card scroll"
             [ngClass]="{'remote': sp.remote}"
             [id]="sp.id"
             [storageService]="sp.remote ? rsService : lsService"
-            (removeEvent)="remove($event)" >
+            (removeScratchpadEvent)="removeScratchpad($event)" >
         </app-scratchpad>
     </div>
 </div>
+
+<app-popup #newScratchpadPopup headerText="Add Scratchpad">
+    <div class="item">
+        <form #createForm="ngForm" autocomplete="off">
+            <label class="info" for="scratchpad">New Scratchpad</label>
+            <input type="text" id="scratchpad" name="scratchpad" 
+                required placeholder="Scratchpad name" #scratchpadElement="ngModel"
+                [(ngModel)]="scratchpadNameInput"/>
+
+            <div class="pad-y">
+                <div class="info">Storage</div>
+                <input type="checkbox" id="remote" name="remote"
+                    [(ngModel)]="remoteInput"/>
+                    <label for="remote" class="toggle">
+                        <span [ngClass]="{'active': !remoteInput}">Local</span>
+                        <span [ngClass]="{'active': remoteInput}">Remote</span>
+                    </label>
+                    <div class="info">
+                        Will be saved to {{remoteInput ? "remote" : "local"}} storage
+                    </div>
+                </div>
+
+            <button [disabled]="!createForm.form.valid"
+                (click)="addScratchpad(); newScratchpadPopup.hide();">Create</button>
+        </form>
+    </div>
+    <div class="item">
+        <form #addForm="ngForm" autocomplete="off">
+            <div class="pad-y">
+                <label class="info" for="modifyItem">Add scratchpad by ID</label>
+                <input type="text" id="scratchpad" name="scratchpad"
+                    required placeholder="Scratchpad ID" #scratchpadElement="ngModel"
+                    [(ngModel)]="scratchpadIdInput"/>
+            </div>
+            <button [disabled]="!addForm.form.valid"
+                (click)="addId(); newScratchpadPopup.hide();">Add</button>
+        </form>
+    </div>
+</app-popup>

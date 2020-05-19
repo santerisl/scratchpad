@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import Scratchpad from '../Scratchpad';
-import Item from '../Item';
 import StorageService from '../StorageService';
 
 
@@ -13,14 +12,11 @@ import StorageService from '../StorageService';
 export class ScratchpadComponent implements OnInit {
 
   itemInput: string;
-  modifyId: number;
-  modifyInput: string;
+
   scratchpad: Scratchpad;
   @Input() storageService: StorageService;
   @Input() id: string;
-  @Output() removeEvent = new EventEmitter<string>();
-
-  constructor() {}
+  @Output() removeScratchpadEvent = new EventEmitter<string>();
 
   ngOnInit(): void {
     this.storageService.loadScratchpad(this.id)
@@ -35,28 +31,14 @@ export class ScratchpadComponent implements OnInit {
     this.itemInput = '';
   }
 
-  removeItem(item: Item) {
-    this.storageService.removeItem(this.id, item.id)
-      .then(() => this.scratchpad.items = this.scratchpad.items.filter(
-        other => item !== other))
-      .catch(error => console.error('Remove Item', error));
-  }
-
-  modifyItem(item: Item) {
-    this.storageService.modifyItem(this.id, item.id, this.modifyInput)
-      .then(() => item.content = this.modifyInput)
-      .catch(error => console.error('Modify Item', error));
-    this.modifyId = undefined;
+  removeItem(removedItemId: number) {
+    this.scratchpad.items = this.scratchpad.items.filter(
+      item => item.id !== removedItemId);
   }
 
   remove() {
     this.storageService.removeScratchpad(this.id)
-      .then(() => this.removeEvent.emit(this.id))
+      .then(() => this.removeScratchpadEvent.emit(this.id))
       .catch(error => console.error('Remove', error));
-  }
-
-  modify(item: Item) {
-    this.modifyId = item.id;
-    this.modifyInput = item.content;
   }
 }

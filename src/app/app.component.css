@@ -12,6 +12,7 @@ header {
     display: flex;
     height: 3rem;
 }
+
 header h1 { flex: 1 0 auto; }
 header .new { flex: 0 0 auto; }
 
@@ -29,11 +30,8 @@ header .new { flex: 0 0 auto; }
     max-width: 800px;
     min-width: 200px;
     overflow: hidden auto;
-    border-radius: 2px;
-    scrollbar-width: thin;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    background-color: #FAFAFA;
 }
 
 .scratchpad:first-child { margin-left: auto; }
+
 .scratchpad:last-child { margin-right: auto; }

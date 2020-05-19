@@ -15,10 +15,13 @@ interface ScratchpadId {
 })
 export class AppComponent implements OnInit {
   title = 'scratchpad';
-  scratchpadInput: string;
-  remoteInput: boolean;
-  scratchpadIds: ScratchpadId[];
 
+  scratchpadNameInput: string;
+  remoteInput: boolean;
+
+  scratchpadIdInput: string;
+
+  scratchpadIds: ScratchpadId[];
   // localIds: string[];
   // remoteIds: string[];
 
@@ -35,13 +38,23 @@ export class AppComponent implements OnInit {
 
   addScratchpad() {
     const storage: StorageService = this.remoteInput ? this.rsService : this.lsService;
-    storage.createScratchpad(this.scratchpadInput)
+    storage.createScratchpad(this.scratchpadNameInput)
       .then((id: string) => this.scratchpadIds.push({id, remote: this.remoteInput}))
       .catch(error => console.error('Add', error));
-    this.scratchpadInput = '';
+    this.scratchpadNameInput = '';
   }
 
-  remove(id: string) {
-    this.scratchpadIds = this.scratchpadIds.filter(other => other.id !== id);
+  addId() {
+    this.scratchpadIds.push({id: this.scratchpadIdInput, remote: true});
+    this.lsService.setItem('remoteIds', [
+      ...this.rsService.getIds(), this.scratchpadIdInput
+    ]);
+    this.scratchpadIdInput = '';
+  }
+
+  removeScratchpad(removedScratchpadId: string) {
+    this.scratchpadIds = this.scratchpadIds.filter(
+      scratchpadId => scratchpadId.id !== removedScratchpadId);
+    this.rsService.removeId(removedScratchpadId);
   }
 }

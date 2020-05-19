@@ -1,0 +1,10 @@
+<div *ngIf="visible" class="popup" (click)="hide()">
+    <div class="popup-content card"
+        (click)="$event.stopPropagation()">
+        <div class="header">
+            <h2>{{headerText}}</h2>
+            <button (click)="hide()">x</button>
+        </div>
+        <ng-content></ng-content>
+    </div>
+</div>

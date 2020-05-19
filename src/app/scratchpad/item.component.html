@@ -1,0 +1,30 @@
+<div class="item click" [ngClass]="{'open': itemEditPopup.visible}" 
+    (click)="itemEditPopup.show(); modifyInput=item.content">
+    
+    <div class="info">
+        <div>{{item.time | date:'yyyy-MM-dd HH:mm'}}</div>
+    </div>
+    <div class="content ellipsis">{{item.content}}</div>
+</div>
+
+<app-popup #itemEditPopup headerText="Item">
+    <div class="item">
+        <form #formElement="ngForm" autocomplete="off">
+            <div class="pad-y">
+                <label class="info" for="modifyItem">Edit item</label>
+                <input
+                    type="text" id="modifyItem" name="modifyItem"
+                    #modifyItemElement="ngModel" required
+                    [(ngModel)]="modifyInput">
+            </div>
+            <button
+                [disabled]="!formElement.form.valid || modifyItemElement.pristine"
+                (click)="modify()">save</button>
+        </form>
+    
+    </div>
+    <div class="item">
+        <div class="info">Actions</div>
+        <button (click)="remove()">remove</button>
+    </div>
+</app-popup>

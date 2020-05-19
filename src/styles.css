@@ -1,5 +1,82 @@
 * {
     margin: 0;
-    padding: 0;
     box-sizing: border-box;
+}
+
+.card {
+    border-radius: 2px;
+    scrollbar-width: thin;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    background-color: #fafafa;
+}
+
+.pad-y {
+    padding: .5rem 0;
+}
+
+.card .header {
+    padding: .5rem;
+    background-color:#eee;
+    border-bottom: 1px solid #ddd;
+}
+
+.card .header-nav {
+    position: absolute;
+    top:0;
+    right: 0;
+    height: 100%;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info {
+    color: #666;
+    font-size: .8rem;
+    display: block;
+}
+
+.item {
+    margin: .5rem;
+    padding: .5rem;
+    background-color: #fafafa;
+    border-radius: .2rem;
+    border: 2px solid #eee;
+    transition: margin .15s, padding .15s;
+}
+
+.item.click:hover, .item.open {
+    cursor: pointer;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.item.open {
+    opacity: .5;
+    border-color: #42717b;
+}
+form input[type="text"] {
+    display: block;
+    width: 100%;
+}
+
+form button {
+    display: block;
+}
+
+
+.toggle span {
+    padding: .2rem;
+    color: #666;
+}
+
+.toggle span.active {
+    color: #000;
+    text-decoration: underline;
 }

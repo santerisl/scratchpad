@@ -1,63 +1,44 @@
 <div *ngIf="scratchpad !== undefined">
-    <div class="header"
-    (click)="scratchpad.active = !scratchpad.active"
-    [ngClass]="{'active': scratchpad.active}">
-
-        <div class="info arrow">
-            <div>{{scratchpad.id}}</div>
-        </div>
-        <div *ngIf="scratchpad.active" class="actions">
-            <button (click)="remove()">remove</button>
-        </div>
-        <div>
-            <h3 class="content ellipsis">{{scratchpad.name}}</h3>
-        </div>
+    <div class="header" (click)="editScratchpadPopup.show()">
+        <div class="info"><div>{{scratchpad.id}}</div></div>
+        <div><h3 class="content ellipsis">{{scratchpad.name}}</h3></div>
     </div>
-    <div class="item">
-        <form #formElement="ngForm">
-            <textarea [appResize] type="text" id="item" name="item" #itemElement="ngModel"
-                (keyup.enter)="addItem()" placeholder="New item" required
-                [(ngModel)]="itemInput"></textarea>
-            <div class="actions">
-                <button
-                    [disabled]="!formElement.form.valid"
-                    (click)="addItem()">Save</button>
-            </div>
-        </form>
-    </div>
+    <button class="item click new-item" (click)="newItemPopup.show()">New item</button>
 
-    <div class="item" *ngFor="let item of scratchpad.items"
-        [ngClass]="{'active': item.active}">
+    <app-item *ngFor="let item of scratchpad.items"
+        [id]="scratchpad.id" [item]="item"
+        [storageService]="storageService"
+        (removeItemEvent)="removeItem($event)">
+    </app-item>
 
-        <div class="info arrow" (click)="item.active = !item.active">
-            <div>{{item.time | date:'yyyy-MM-dd HH:mm'}}</div>
-        </div>
-        <div *ngIf="item.active" class="actions">
-            <button (click)="modify(item)">edit </button>
-            <button (click)="removeItem(item)">remove</button>
-        </div>
-        <div *ngIf="modifyId !== item.id" class="content ellipsis">
-            {{item.content}}
-        </div>
-        <div *ngIf="modifyId === item.id" class="modify">
-            <form #formElement="ngForm">
-                <textarea [appResize] type="text" id="modifyItem" name="modifyItem"
-                    (keyup.enter)="modifyItem(item)"
-                    (keyup.escape)="modifyId = undefined"
-                    #modifyItemElement="ngModel" required
-                    [(ngModel)]="modifyInput"></textarea>
+    <app-popup #newItemPopup headerText="New Item">
+        <div class="item">
+            <form #formElement="ngForm"  autocomplete="off">
+                <div class="pad-y">
+                    <label class="info" for="item">New item</label>
+                    <input type="text" id="item" name="item" #itemElement="ngModel"
+                        placeholder="Item text" required
+                        [(ngModel)]="itemInput">
+                </div>
                 <div class="actions">
-                    <button (click)="modifyId = undefined">cancel</button>
                     <button
                         [disabled]="!formElement.form.valid"
-                        (click)="modifyItem(item)">save</button>
+                        (click)="addItem()">Save</button>
                 </div>
             </form>
-        </div>
-    </div>
 
+        </div>
+    </app-popup>
+    
+    <app-popup #editScratchpadPopup headerText="{{scratchpad.name}}">
+        <div class="item">
+            <div class="info">Actions</div>
+            <button (click)="remove()">remove</button>
+        </div>
+    </app-popup>
 </div>
 
 <div *ngIf="scratchpad === undefined">
     <span>Loading / Error</span>
+    <button (click)="removeScratchpadEvent.emit(id)">Remove</button>
 </div>
