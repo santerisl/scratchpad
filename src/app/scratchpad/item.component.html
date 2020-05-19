@@ -14,12 +14,12 @@
                 <label class="info" for="modifyItem">Edit item</label>
                 <input
                     type="text" id="modifyItem" name="modifyItem"
-                    #modifyItemElement="ngModel" required
+                    #focusElement required
                     [(ngModel)]="modifyInput">
             </div>
             <button
-                [disabled]="!formElement.form.valid || modifyItemElement.pristine"
-                (click)="modify()">save</button>
+                [disabled]="!formElement.form.valid"
+                (click)="modify(); itemEditPopup.hide();">save</button>
         </form>
     
     </div>

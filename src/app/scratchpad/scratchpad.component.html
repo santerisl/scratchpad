@@ -3,7 +3,8 @@
         <div class="info"><div>{{scratchpad.id}}</div></div>
         <div><h3 class="content ellipsis">{{scratchpad.name}}</h3></div>
     </div>
-    <button class="item click new-item" (click)="newItemPopup.show()">New item</button>
+    <button class="item click new-item"
+        (click)="newItemPopup.show()">New item</button>
 
     <app-item *ngFor="let item of scratchpad.items"
         [id]="scratchpad.id" [item]="item"
@@ -13,20 +14,19 @@
 
     <app-popup #newItemPopup headerText="New Item">
         <div class="item">
-            <form #formElement="ngForm"  autocomplete="off">
+            <form #newItemForm="ngForm" autocomplete="off">
                 <div class="pad-y">
                     <label class="info" for="item">New item</label>
-                    <input type="text" id="item" name="item" #itemElement="ngModel"
+                    <input type="text" id="item" name="item" #focusElement
                         placeholder="Item text" required
                         [(ngModel)]="itemInput">
                 </div>
                 <div class="actions">
                     <button
-                        [disabled]="!formElement.form.valid"
-                        (click)="addItem()">Save</button>
+                        [disabled]="!newItemForm.form.valid"
+                        (click)="addItem(); newItemPopup.hide();">Save</button>
                 </div>
             </form>
-
         </div>
     </app-popup>
     

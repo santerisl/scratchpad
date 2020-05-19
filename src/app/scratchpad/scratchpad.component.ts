@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import Scratchpad from '../Scratchpad';
 import StorageService from '../StorageService';
 
@@ -17,6 +17,8 @@ export class ScratchpadComponent implements OnInit {
   @Input() storageService: StorageService;
   @Input() id: string;
   @Output() removeScratchpadEvent = new EventEmitter<string>();
+
+  @ViewChild('newItemInputElement') itemInputElement: ElementRef;
 
   ngOnInit(): void {
     this.storageService.loadScratchpad(this.id)

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ElementRef, ContentChild } from '@angular/core';
 
 @Component({
   selector: 'app-popup',
@@ -11,8 +11,13 @@ export class PopupComponent {
   public visible: boolean;
   @Input() headerText: string;
 
+  @ContentChild('focusElement') onShowFocus: ElementRef;
+
   show() {
     this.visible = true;
+    if (this.onShowFocus) {
+      setTimeout(() => this.onShowFocus.nativeElement.focus(), 0);
+    }
   }
 
   hide() {

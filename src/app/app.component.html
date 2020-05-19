@@ -20,8 +20,8 @@
     <div class="item">
         <form #createForm="ngForm" autocomplete="off">
             <label class="info" for="scratchpad">New Scratchpad</label>
-            <input type="text" id="scratchpad" name="scratchpad" 
-                required placeholder="Scratchpad name" #scratchpadElement="ngModel"
+            <input type="text" id="scratchpad" name="scratchpad"
+                required placeholder="Scratchpad name" #focusElement
                 [(ngModel)]="scratchpadNameInput"/>
 
             <div class="pad-y">
@@ -46,7 +46,7 @@
             <div class="pad-y">
                 <label class="info" for="modifyItem">Add scratchpad by ID</label>
                 <input type="text" id="scratchpad" name="scratchpad"
-                    required placeholder="Scratchpad ID" #scratchpadElement="ngModel"
+                    required placeholder="Scratchpad ID"
                     [(ngModel)]="scratchpadIdInput"/>
             </div>
             <button [disabled]="!addForm.form.valid"
